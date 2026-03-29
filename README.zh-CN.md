@@ -1,147 +1,53 @@
-# polymarket-go
+# polymarket-go (CLOB SDK)
 
-[English](./README.md) | 中文
+这是一个按 `clob-client` 语义迁移的 Polymarket CLOB Go SDK。
 
-一个面向 Polymarket Gamma 与 CLOB API 的轻量 Go 客户端和 CLI。
+## 范围
 
-## 功能
+本仓库现在只保留一个核心包：
 
-- 从 Gamma API 拉取市场列表
-- 在本地按查询词搜索/过滤市场
-- 通过 ID 获取单个市场
-- 通过 slug 获取单个市场
-- 从 CLOB API 获取 token price
-- 从 CLOB API 获取 order book
+- `clob`：CLOB 客户端 SDK（公共接口 + 鉴权 + 订单/奖励/builder/RFQ 相关方法）
+
+旧的 `pkg/polymarket` 与旧 CLI 入口已移除。
 
 ## 环境要求
 
-- Go 1.23.5 或更高版本
+- Go 1.23.5+
 
-## 安装
-
-### 作为库使用
+## 作为库安装
 
 ```bash
-go get github.com/uerax/polymarket-go/pkg/polymarket
+go get github.com/uerax/polymarket-go/clob
 ```
 
-### 构建 CLI
-
-```bash
-go build -o polymarket-go ./cmd
-```
-
-## 库调用示例
-
-```go
-package main
-
-import (
-    "fmt"
-    "log"
-    "time"
-
-    polymarket "github.com/uerax/polymarket-go/pkg/polymarket"
-)
-
-func main() {
-    client := polymarket.NewClient(polymarket.Config{
-        Timeout:      10 * time.Second,
-        DefaultLimit: 10,
-    })
-
-    active := true
-    markets, err := client.ListMarkets(polymarket.ListMarketsOptions{
-        Limit:  5,
-        Active: &active,
-        Query:  "bitcoin",
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    for _, market := range markets {
-        fmt.Println(market.ID, market.Question)
-    }
-}
-```
-
-## CLI 用法
-
-先构建 CLI：
-
-```bash
-go build -o polymarket-go ./cmd
-```
-
-### 查询市场列表
-
-```bash
-./polymarket-go markets --limit 5 --query bitcoin --active
-```
-
-### 通过 ID 获取市场
-
-```bash
-./polymarket-go market --id 12345
-```
-
-### 通过 slug 获取市场
-
-```bash
-./polymarket-go market --slug will-btc-hit-200k
-```
-
-### 获取 token price
-
-```bash
-./polymarket-go price --token-id <TOKEN_ID> --side buy
-```
-
-### 获取 order book
-
-```bash
-./polymarket-go book --token-id <TOKEN_ID>
-```
-
-## 开发
-
-运行测试：
+## 运行测试
 
 ```bash
 go test ./...
 ```
 
-构建全部包：
-
-```bash
-go build ./...
-```
-
-不生成二进制直接运行 CLI：
-
-```bash
-go run ./cmd markets --limit 1
-```
-
-## 项目结构
+## 包结构
 
 ```text
-.
-├── cmd/
-│   └── main.go
-├── pkg/
-│   └── polymarket/
-│       ├── client.go
-│       ├── client_test.go
-│       └── model.go
-├── go.mod
-├── README.md
-└── README.zh-CN.md
+clob/
+├── client.go            # 主客户端与 API 方法
+├── constants.go         # endpoint 与 cursor 常量
+├── types.go             # 请求/响应模型
+├── errors.go            # ApiError 与鉴权错误
+├── http_helpers.go      # HTTP + 错误映射 + 重试 + throwOnError
+├── headers.go           # L1/L2 头部构造
+├── signer.go            # 签名器抽象
+├── order_types.go       # Signature/builder 相关接口
+└── http_helpers_test.go # 关键行为对齐测试
 ```
 
-## 说明
+## 与 TS 对齐说明
 
-- 默认 Gamma Base URL：`https://gamma-api.polymarket.com`
-- 默认 CLOB Base URL：`https://clob.polymarket.com`
-- CLI 会将结果以格式化 JSON 输出到标准输出。
+当前已对齐以下关键语义：
+
+- cursor 分页（`MA==` / `LTE=`）
+- 错误对象映射 + 可选 `throwOnError`
+- L1/L2 header 流程
+- query 参数序列化细节（含 RFQ 重复参数风格）
+
+后续全量对齐工作只在 `clob` 内继续推进。

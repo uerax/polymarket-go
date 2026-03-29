@@ -1,147 +1,53 @@
-# polymarket-go
+# polymarket-go (CLOB SDK)
 
-English | [中文](./README.zh-CN.md)
+Go SDK migrated from `clob-client` semantics for Polymarket CLOB.
 
-A small Go client and CLI for Polymarket Gamma and CLOB APIs.
+## Scope
 
-## Features
+This repository now focuses on a single package:
 
-- List markets from the Gamma API
-- Search/filter markets locally by query
-- Get a market by ID
-- Get a market by slug
-- Get token price from the CLOB API
-- Get order book data from the CLOB API
+- `clob`: CLOB client SDK (public endpoints + auth flows + order/rewards/builder/RFQ related methods)
+
+Legacy `pkg/polymarket` and old CLI entrypoint were removed.
 
 ## Requirements
 
-- Go 1.23.5 or newer
+- Go 1.23.5+
 
-## Installation
-
-### Library
+## Install (as library)
 
 ```bash
-go get github.com/uerax/polymarket-go/pkg/polymarket
+go get github.com/uerax/polymarket-go/clob
 ```
 
-### CLI
-
-```bash
-go build -o polymarket-go ./cmd
-```
-
-## Library Usage
-
-```go
-package main
-
-import (
-    "fmt"
-    "log"
-    "time"
-
-    polymarket "github.com/uerax/polymarket-go/pkg/polymarket"
-)
-
-func main() {
-    client := polymarket.NewClient(polymarket.Config{
-        Timeout:      10 * time.Second,
-        DefaultLimit: 10,
-    })
-
-    active := true
-    markets, err := client.ListMarkets(polymarket.ListMarketsOptions{
-        Limit:  5,
-        Active: &active,
-        Query:  "bitcoin",
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    for _, market := range markets {
-        fmt.Println(market.ID, market.Question)
-    }
-}
-```
-
-## CLI Usage
-
-Build the CLI first:
-
-```bash
-go build -o polymarket-go ./cmd
-```
-
-### List markets
-
-```bash
-./polymarket-go markets --limit 5 --query bitcoin --active
-```
-
-### Get market by ID
-
-```bash
-./polymarket-go market --id 12345
-```
-
-### Get market by slug
-
-```bash
-./polymarket-go market --slug will-btc-hit-200k
-```
-
-### Get token price
-
-```bash
-./polymarket-go price --token-id <TOKEN_ID> --side buy
-```
-
-### Get order book
-
-```bash
-./polymarket-go book --token-id <TOKEN_ID>
-```
-
-## Development
-
-Run tests:
+## Run tests
 
 ```bash
 go test ./...
 ```
 
-Build all packages:
-
-```bash
-go build ./...
-```
-
-Run the CLI without building a binary:
-
-```bash
-go run ./cmd markets --limit 1
-```
-
-## Project Structure
+## Package layout
 
 ```text
-.
-├── cmd/
-│   └── main.go
-├── pkg/
-│   └── polymarket/
-│       ├── client.go
-│       ├── client_test.go
-│       └── model.go
-├── go.mod
-├── README.md
-└── README.zh-CN.md
+clob/
+├── client.go            # Main client and API methods
+├── constants.go         # Endpoint and cursor constants
+├── types.go             # Request/response models
+├── errors.go            # ApiError and auth errors
+├── http_helpers.go      # HTTP + error mapping + retry + throwOnError
+├── headers.go           # L1/L2 header generation
+├── signer.go            # Signer abstraction
+├── order_types.go       # Signature/builder related interfaces
+└── http_helpers_test.go # Parity-focused behavior tests
 ```
 
-## Notes
+## Notes on TS parity
 
-- Default Gamma base URL: `https://gamma-api.polymarket.com`
-- Default CLOB base URL: `https://clob.polymarket.com`
-- The CLI outputs formatted JSON to stdout.
+This SDK is aligned to TS `clob-client` behavior in key areas:
+
+- Cursor pagination (`MA==` / `LTE=`)
+- Error object mapping + optional `throwOnError`
+- L1/L2 header flow
+- Query serialization details (including repeated RFQ style query building)
+
+Further parity improvements should continue inside `clob` only.
