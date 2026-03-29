@@ -1,4 +1,4 @@
-package clob
+package polymarket
 
 type SignatureType int
 

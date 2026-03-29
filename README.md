@@ -6,7 +6,7 @@ Go SDK migrated from `clob-client` semantics for Polymarket CLOB.
 
 This repository now focuses on a single package:
 
-- `clob`: CLOB client SDK (public endpoints + auth flows + order/rewards/builder/RFQ related methods)
+- `polymarket`: CLOB client SDK (public endpoints + auth flows + order/rewards/builder/RFQ related methods)
 
 Legacy `pkg/polymarket` and old CLI entrypoint were removed.
 
@@ -17,7 +17,7 @@ Legacy `pkg/polymarket` and old CLI entrypoint were removed.
 ## Install (as library)
 
 ```bash
-go get github.com/uerax/polymarket-go/clob
+go get github.com/uerax/polymarket-go/polymarket
 ```
 
 ## Run tests
@@ -29,7 +29,7 @@ go test ./...
 ## Package layout
 
 ```text
-clob/
+polymarket/
 ├── client.go            # Main client and API methods
 ├── constants.go         # Endpoint and cursor constants
 ├── types.go             # Request/response models
@@ -50,4 +50,4 @@ This SDK is aligned to TS `clob-client` behavior in key areas:
 - L1/L2 header flow
 - Query serialization details (including repeated RFQ style query building)
 
-Further parity improvements should continue inside `clob` only.
+Further parity improvements should continue inside `polymarket` only.

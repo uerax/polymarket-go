@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This repo is **clob-only** now.
+This repo is **polymarket-only** now.
 
-- Primary package: `clob`
+- Primary package: `polymarket`
 - Goal: align Go SDK behavior with TS `clob-client` semantics
 - Legacy package/CLI from old `pkg/polymarket` flow was removed and should not be reintroduced.
 
@@ -15,26 +15,26 @@ This repo is **clob-only** now.
 - Run tests:
   - `go test ./...`
 - Run package tests only:
-  - `go test ./clob -v`
+  - `go test ./polymarket -v`
 - Run one test:
-  - `go test ./clob -run TestThrowOnErrorReturnsApiError -v`
+  - `go test ./polymarket -run TestThrowOnErrorReturnsApiError -v`
 
 ## Architecture (high level)
 
-- `clob/client.go`
+- `polymarket/client.go`
   - Main API surface (public, auth, orders, rewards, builder, RFQ methods)
   - Cursor pagination behavior and response mapping
-- `clob/http_helpers.go`
+- `polymarket/http_helpers.go`
   - Shared HTTP wrapper, non-2xx error object mapping, optional throw-on-error, POST retry
-- `clob/headers.go`
+- `polymarket/headers.go`
   - L1/L2 auth headers and HMAC signature assembly
-- `clob/types.go`
+- `polymarket/types.go`
   - Wire models and request payloads
-- `clob/constants.go`
+- `polymarket/constants.go`
   - Endpoint constants and cursor constants
-- `clob/errors.go`
+- `polymarket/errors.go`
   - `ApiError` and auth/builder error constants
-- `clob/signer.go`, `clob/order_types.go`
+- `polymarket/signer.go`, `polymarket/order_types.go`
   - Signer and builder integration abstractions
 
 ## Important Constraints
@@ -45,5 +45,5 @@ This repo is **clob-only** now.
   - naming and response structures where practical in Go
   - L1/L2 auth header behavior
 
-- Keep new work inside `clob`.
+- Keep new work inside `polymarket`.
 - Do not add back old `pkg/polymarket` package or old CLI entrypoint unless explicitly requested.

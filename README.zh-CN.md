@@ -6,7 +6,7 @@
 
 本仓库现在只保留一个核心包：
 
-- `clob`：CLOB 客户端 SDK（公共接口 + 鉴权 + 订单/奖励/builder/RFQ 相关方法）
+- `polymarket`：CLOB 客户端 SDK（公共接口 + 鉴权 + 订单/奖励/builder/RFQ 相关方法）
 
 旧的 `pkg/polymarket` 与旧 CLI 入口已移除。
 
@@ -17,7 +17,7 @@
 ## 作为库安装
 
 ```bash
-go get github.com/uerax/polymarket-go/clob
+go get github.com/uerax/polymarket-go/polymarket
 ```
 
 ## 运行测试
@@ -29,7 +29,7 @@ go test ./...
 ## 包结构
 
 ```text
-clob/
+polymarket/
 ├── client.go            # 主客户端与 API 方法
 ├── constants.go         # endpoint 与 cursor 常量
 ├── types.go             # 请求/响应模型
@@ -50,4 +50,4 @@ clob/
 - L1/L2 header 流程
 - query 参数序列化细节（含 RFQ 重复参数风格）
 
-后续全量对齐工作只在 `clob` 内继续推进。
+后续全量对齐工作只在 `polymarket` 内继续推进。

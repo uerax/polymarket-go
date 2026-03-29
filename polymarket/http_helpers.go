@@ -1,4 +1,4 @@
-package clob
+package polymarket
 
 import (
 	"bytes"
